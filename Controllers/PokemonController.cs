@@ -28,8 +28,6 @@ namespace pokedex.Controllers
             }
         }
 
-
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Pokemon>> GetById(string id)
         {

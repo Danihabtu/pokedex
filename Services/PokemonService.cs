@@ -7,11 +7,11 @@ namespace pokedex.Services
     {
         private readonly IMongoCollection<Pokemon> _pokemonCollection;
 
-        public PokemonService()
+        public PokemonService(IConfiguration configuration)
         {
-            var client = new MongoClient("mongodb://localhost:27017");
-            var database = client.GetDatabase("PokedexDB");
-            _pokemonCollection = database.GetCollection<Pokemon>("Pokemon");
+            var client = new MongoClient(configuration["MongoDbSettings:ConnectionString"]);
+            var database = client.GetDatabase(configuration["MongoDbSettings:DatabaseName"]);
+            _pokemonCollection = database.GetCollection<Pokemon>(configuration["MongoDbSettings:CollectionName"]);
         }
 
         public async Task<List<Pokemon>> GetAllAsync() =>
