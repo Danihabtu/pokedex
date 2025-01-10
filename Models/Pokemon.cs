@@ -14,3 +14,4 @@ namespace pokedex.Models
         public int Level { get; set; }
     }
 }
+

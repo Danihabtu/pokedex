@@ -16,51 +16,86 @@ namespace pokedex.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Pokemon>>> GetAll() =>
-            await _pokemonService.GetAllAsync();
+        public async Task<ActionResult<List<Pokemon>>> GetAll()
+        {
+            try
+            {
+                return await _pokemonService.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
+        }
+
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Pokemon>> GetById(string id)
         {
-            var pokemon = await _pokemonService.GetByIdAsync(id);
+            try
+            {
+                var pokemon = await _pokemonService.GetByIdAsync(id);
 
-            if (pokemon == null)
-                return NotFound();
+                if (pokemon == null)
+                    return NotFound(new { Message = $"Pokemon with ID {id} not found." });
 
-            return pokemon;
+                return pokemon;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Pokemon pokemon)
         {
-            await _pokemonService.CreateAsync(pokemon);
-            return CreatedAtAction(nameof(GetById), new { id = pokemon.Id }, pokemon);
+            try
+            {
+                await _pokemonService.CreateAsync(pokemon);
+                return CreatedAtAction(nameof(GetById), new { id = pokemon.Id }, pokemon);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, Pokemon updatedPokemon)
         {
-            var existingPokemon = await _pokemonService.GetByIdAsync(id);
-
-            if (existingPokemon == null)
-                return NotFound();
-
-            await _pokemonService.UpdateAsync(id, updatedPokemon);
-
-            return NoContent();
+            try
+            {
+                await _pokemonService.UpdateAsync(id, updatedPokemon);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var pokemon = await _pokemonService.GetByIdAsync(id);
-
-            if (pokemon == null)
-                return NotFound();
-
-            await _pokemonService.DeleteAsync(id);
-
-            return NoContent();
+            try
+            {
+                await _pokemonService.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
     }
 }
